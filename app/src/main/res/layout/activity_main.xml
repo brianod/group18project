@@ -37,7 +37,7 @@
                 app:cardBackgroundColor="#8FA4B8">
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_view"
+                    android:id="@+id/task_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     tools:listitem="@layout/task_item" />
@@ -64,6 +64,14 @@
                 android:layout_marginTop="5dp"
                 android:layout_weight="1"
                 app:cardBackgroundColor="#8FA4B8">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/group_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    tools:listitem="@layout/group_item" />
+
 
             </androidx.cardview.widget.CardView>
 

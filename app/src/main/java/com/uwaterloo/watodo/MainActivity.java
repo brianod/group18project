@@ -3,6 +3,7 @@ package com.uwaterloo.watodo;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -15,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -25,10 +27,12 @@ public class MainActivity extends AppCompatActivity {
     public static final int ADD_TASK_REQUEST = 1;
     public static final int EDIT_TASK_REQUEST = 2;
     private TaskViewModel taskViewModel;
+    private Observer<List<Task>> tasksObserver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Toast.makeText(MainActivity.this, "On Create", Toast.LENGTH_SHORT).show();
         setContentView(R.layout.activity_main);
 
         FloatingActionButton buttonAddTask = findViewById(R.id.button_add_task);
@@ -40,21 +44,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = findViewById(R.id.task_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
 
         final TaskAdapter adapter = new TaskAdapter();
         recyclerView.setAdapter(adapter);
 
-        taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
-        taskViewModel.getAllTasks().observe(this, new Observer<List<Task>>() {
+        tasksObserver = new Observer<List<Task>>() {
             @Override
             public void onChanged(List<Task> tasks) {
-//                Toast.makeText(MainActivity.this, "OnChanged",Toast.LENGTH_SHORT).show();
                 adapter.submitList(tasks);
             }
-        });
+        };
+        taskViewModel = ViewModelProviders.of(this).get(TaskViewModel.class);
+
+        taskViewModel.getAllTasksByPriority().observe(this, tasksObserver);
 
         // swipe to delete callback
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
@@ -70,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Task deleted", Toast.LENGTH_SHORT).show();
             }
         }).attachToRecyclerView(recyclerView);
-        
+
         adapter.setOnItemClickListener(new TaskAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Task task) {
@@ -89,6 +94,24 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, EDIT_TASK_REQUEST);
             }
         });
+
+        RecyclerView GroupRecyclerView = findViewById(R.id.group_recycler_view);
+        LinearLayoutManager GroupLayoutManager = new LinearLayoutManager(this);
+        GroupLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
+        GroupRecyclerView.setLayoutManager(GroupLayoutManager);
+        GroupRecyclerView.setHasFixedSize(true);
+
+        final GroupAdapter groupAdapter = new GroupAdapter();
+        GroupRecyclerView.setAdapter(groupAdapter);
+
+        taskViewModel.getAllGroup().observe(this, new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> strings) {
+                groupAdapter.submitList(strings);
+            }
+        });
+
+
     }
 
     @Override
@@ -99,11 +122,11 @@ public class MainActivity extends AppCompatActivity {
             String title = data.getStringExtra(AddEditTaskActivity.EXTRA_TITLE);
             String description = data.getStringExtra(AddEditTaskActivity.EXTRA_DESCRIPTION);
             int priority = data.getIntExtra(AddEditTaskActivity.EXTRA_PRIORITY, 0);
-            int year = data.getIntExtra(AddEditTaskActivity.EXTRA_YEAR,0);
-            int month = data.getIntExtra(AddEditTaskActivity.EXTRA_MONTH,0);
-            int date = data.getIntExtra(AddEditTaskActivity.EXTRA_DAY,0);
+            int year = data.getIntExtra(AddEditTaskActivity.EXTRA_YEAR, Integer.MAX_VALUE);
+            int month = data.getIntExtra(AddEditTaskActivity.EXTRA_MONTH, Integer.MAX_VALUE);
+            int date = data.getIntExtra(AddEditTaskActivity.EXTRA_DAY, Integer.MAX_VALUE);
 
-            Task task = new Task(title, description, "location added", null, 0, priority,year, month, date);
+            Task task = new Task(title, description, "location added", null, 0, priority, year, month, date);
             taskViewModel.insert(task);
 
             Toast.makeText(this, "Task saved", Toast.LENGTH_SHORT).show();
@@ -119,12 +142,12 @@ public class MainActivity extends AppCompatActivity {
             String title = data.getStringExtra(ViewTaskActivity.EXTRA_TITLE);
             String description = data.getStringExtra(ViewTaskActivity.EXTRA_DESCRIPTION);
             int priority = data.getIntExtra(ViewTaskActivity.EXTRA_PRIORITY, 1);
-            int year = data.getIntExtra(ViewTaskActivity.EXTRA_YEAR,0);
-            int month = data.getIntExtra(ViewTaskActivity.EXTRA_MONTH,0);
-            int date = data.getIntExtra(ViewTaskActivity.EXTRA_DAY,0);
+            int year = data.getIntExtra(ViewTaskActivity.EXTRA_YEAR, Integer.MAX_VALUE);
+            int month = data.getIntExtra(ViewTaskActivity.EXTRA_MONTH, Integer.MAX_VALUE);
+            int date = data.getIntExtra(ViewTaskActivity.EXTRA_DAY, Integer.MAX_VALUE);
             int completeness = data.getIntExtra(ViewTaskActivity.EXTRA_COMPLETENESS, 0);
 
-            Task task = new Task(title, description, "location edited", null, completeness, priority,year,month,date);
+            Task task = new Task(title, description, "location edited", null, completeness, priority, year, month, date);
             task.setId(id);
             taskViewModel.update(task);
             Toast.makeText(this, "Task updated", Toast.LENGTH_SHORT).show();
@@ -146,6 +169,18 @@ public class MainActivity extends AppCompatActivity {
             case R.id.delete_all_tasks:
                 taskViewModel.deleteAllTasks();
                 Toast.makeText(this, "All tasks deleted", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.rank_by_completeness:
+                taskViewModel.getAllTasksByComp().observe(this, tasksObserver);
+                Toast.makeText(MainActivity.this, "Ranked by completeness", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.rank_by_priority:
+                taskViewModel.getAllTasksByPriority().observe(this, tasksObserver);
+                Toast.makeText(MainActivity.this, "Ranked by priority", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.rank_by_deadline:
+                taskViewModel.getAllTasksByDdl().observe(this, tasksObserver);
+                Toast.makeText(MainActivity.this, "Ranked by deadline", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

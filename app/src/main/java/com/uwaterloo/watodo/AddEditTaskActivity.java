@@ -59,17 +59,20 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
             editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
             editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
             numberPickerPriority.setRating(intent.getIntExtra(EXTRA_PRIORITY,0));
-            ddlYear = intent.getIntExtra(EXTRA_YEAR,0);
-            ddlMonth = intent.getIntExtra(EXTRA_MONTH,0);
-            ddlDay = intent.getIntExtra(EXTRA_DAY,0);
+            ddlYear = intent.getIntExtra(EXTRA_YEAR,Integer.MAX_VALUE);
+            ddlMonth = intent.getIntExtra(EXTRA_MONTH,Integer.MAX_VALUE);
+            ddlDay = intent.getIntExtra(EXTRA_DAY,Integer.MAX_VALUE);
             String dateText = "";
-            if (ddlYear != 0 && ddlMonth != 0 && ddlDay != 0) {
+            if (ddlYear != Integer.MAX_VALUE && ddlMonth != Integer.MAX_VALUE && ddlDay != Integer.MAX_VALUE) {
                 dateText = ddlYear+"-"+ddlMonth+"-"+ddlDay;
             }
             selectDate.setText(dateText);
 //            numberPickerPriority.setRating(Integer.parseInt(intent.getStringExtra(EXTRA_PRIORITY)));
         } else {
             setTitle("Add Task");
+            ddlYear = Integer.MAX_VALUE;
+            ddlMonth = Integer.MAX_VALUE;
+            ddlDay = Integer.MAX_VALUE;
         }
     }
 

@@ -53,7 +53,7 @@ public class TaskAdapter extends ListAdapter<Task, TaskAdapter.TaskHolder> {
         int ddlMonth = currentTask.getDdlMonth();
         int ddlDay = currentTask.getDdlDay();
         String ddl;
-        if (ddlYear != 0 && ddlMonth != 0 && ddlDay != 0) {
+        if (ddlYear != Integer.MAX_VALUE && ddlMonth != Integer.MAX_VALUE && ddlDay != Integer.MAX_VALUE) {
             ddl = currentTask.getDdlYear() + "." + currentTask.getDdlMonth() + "." + currentTask.getDdlDay();
         } else {
             ddl = "No Deadline";
