@@ -9,8 +9,8 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="8dp"
-        android:layout_weight="2"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="10dp"
+        android:layout_weight="2">
 
         <TextView
             android:id="@+id/view_task_title"
@@ -53,11 +53,11 @@
             android:id="@+id/completeness_percentage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_above="@id/view_task_completeness_slider"
             android:layout_alignParentEnd="true"
             android:text="Completeness: 10%"
-            android:textStyle="bold"
             android:textColor="@color/colorPrimaryDark"
-            android:layout_above="@id/view_task_completeness_slider"/>
+            android:textStyle="bold" />
 
         <SeekBar
             android:id="@+id/view_task_completeness_slider"
@@ -66,6 +66,7 @@
             android:layout_below="@id/view_task_priority"
             android:layout_marginTop="5dp"
             android:progress="10" />
+
     </RelativeLayout>
 
     <RelativeLayout
@@ -90,8 +91,8 @@
                 android:id="@+id/view_task_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="description"
-                android:padding="8dp"/>
+                android:padding="8dp"
+                android:text="description" />
 
         </androidx.cardview.widget.CardView>
 

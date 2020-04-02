@@ -43,6 +43,8 @@ public class TaskRepository {
 
     public LiveData<List<String>> getAllGroup() {return taskDao.getAllGroup();}
 
+    public LiveData<List<Task>> getTasksByGroup(String group){return taskDao.getTasksByGroup(group);}
+
     private static class InsertTaskAsyncTask extends AsyncTask<Task, Void, Void> {
         private TaskDao taskDao;
         private ReminderService reminderService;

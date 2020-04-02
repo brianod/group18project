@@ -36,4 +36,7 @@ public interface TaskDao {
 
     @Query("SELECT DISTINCT groupTag FROM task_table WHERE groupTag IS NOT NULL")
     LiveData<List<String>> getAllGroup();
+
+    @Query("SELECT * FROM task_table WHERE groupTag = :group")
+    LiveData<List<Task>> getTasksByGroup(String group);
 }

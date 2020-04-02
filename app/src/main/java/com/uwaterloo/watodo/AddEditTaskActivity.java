@@ -49,6 +49,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
     public static final String EXTRA_MONTH = "com.uwaterloo.watodo.EXTRA_MONTH";
     public static final String EXTRA_DAY = "com.uwaterloo.watodo.EXTRA_DAY";
     public static final String EXTRA_COORDS = "com.uwaterloo.watodo.EXTRA_COORDS";
+    public static final String EXTRA_GROUP = "com.uwaterloo.watodo.EXTRA_GROUP";
     // GALLERY/CAMERA REQUESTS
     public static final int FILE_PICKER_REQUEST = 600;
     public static final int CAMERA_REQUEST_CODE = 601;
@@ -57,10 +58,12 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
 
     private EditText editTextTitle;
     private EditText editTextDescription;
+    private EditText editGroup;
     private RatingBar numberPickerPriority;
     private EditText selectDate;
     private int ddlYear, ddlMonth, ddlDay;
     private int mYear, mMonth, mDay;
+    private String group;
     // Attachments
     private TextView attachmentFilename;
     private Uri attachmentUri;
@@ -85,6 +88,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
 
         editTextTitle = findViewById(R.id.edit_text_title);
         editTextDescription = findViewById(R.id.edit_text_description);
+        editGroup = findViewById(R.id.edit_text_group);
   
         numberPickerPriority = findViewById(R.id.priority_stars);
   
@@ -104,6 +108,10 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
             setTitle("Edit Task");
             editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
             editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
+            group = intent.getStringExtra(EXTRA_GROUP);
+            if (group != null) {
+                editGroup.setText(intent.getStringExtra(EXTRA_GROUP));
+            }
             numberPickerPriority.setRating(intent.getIntExtra(EXTRA_PRIORITY,0));
             ddlYear = intent.getIntExtra(EXTRA_YEAR,0);
             ddlMonth = intent.getIntExtra(EXTRA_MONTH,0);
@@ -149,6 +157,8 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
     private void saveTask() {
         String title = editTextTitle.getText().toString();
         String description = editTextDescription.getText().toString();
+        group = editGroup.getText().toString();
+        if(group.trim().isEmpty()) {group = null;}
         int priority = (int) numberPickerPriority.getRating();
         
         if (title.trim().isEmpty() || description.trim().isEmpty()) {
@@ -164,6 +174,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
         data.putExtra(EXTRA_MONTH, ddlMonth);
         data.putExtra(EXTRA_DAY, ddlDay);
         data.putExtra(EXTRA_COORDS, coords);
+        data.putExtra(EXTRA_GROUP, group);
 
         // add id only if the task has been edited (existing task; not new)
         int id = getIntent().getIntExtra(EXTRA_ID, -1);
