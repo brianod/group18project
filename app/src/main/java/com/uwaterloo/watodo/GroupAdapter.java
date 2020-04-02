@@ -1,14 +1,18 @@
 package com.uwaterloo.watodo;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.uwaterloo.watodo.CustomizedView.SquareCardView;
 
 
 public class GroupAdapter extends ListAdapter<String, GroupAdapter.GroupHolder> {
@@ -45,21 +49,21 @@ public class GroupAdapter extends ListAdapter<String, GroupAdapter.GroupHolder> 
         holder.textViewGroupName.setText(currentGroup);
     }
 
-    public String getGroupAt(int position) {
-        return getItem(position);
-    }
 
     class GroupHolder extends RecyclerView.ViewHolder {
         private TextView textViewGroupName;
+        private CardView groupCard;
 
         public GroupHolder(@NonNull View itemView) {
             super(itemView);
             textViewGroupName = itemView.findViewById(R.id.text_view_group_name);
-
+            groupCard = itemView.findViewById(R.id.group_card);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int position = getAdapterPosition();
+//                    groupCard.setBackgroundColor(Color.parseColor("#1E78CE"));
+//                    textViewGroupName.setTextColor(Color.parseColor("#FFFFFF"));
                     if (listener != null && position != RecyclerView.NO_POSITION) {
                         listener.onItemClick(getItem(position));
                     }
@@ -75,4 +79,5 @@ public class GroupAdapter extends ListAdapter<String, GroupAdapter.GroupHolder> 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
+
 }

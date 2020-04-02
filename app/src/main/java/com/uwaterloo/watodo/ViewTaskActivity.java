@@ -30,6 +30,7 @@ public class ViewTaskActivity extends AppCompatActivity {
     public static final String EXTRA_MONTH = "com.uwaterloo.watodo.EXTRA_MONTH";
     public static final String EXTRA_DAY = "com.uwaterloo.watodo.EXTRA_DAY";
     public static final String EXTRA_COORDS = "com.uwaterloo.watodo.EXTRA_COORDS";
+    public static final String EXTRA_GROUP = "com.uwaterloo.watodo.EXTRA_GROUP";
 
     private TextView viewTaskTitle;
     private TextView viewTaskDdl;
@@ -40,7 +41,7 @@ public class ViewTaskActivity extends AppCompatActivity {
     private TextView viewTaskDescription;
     private CardView editTaskCard;
     private int id, ddlYear, ddlMonth, ddlDay, priority, completeness;
-    private String title, location, description;
+    private String title, location, description, group;
     private double[] coords;
 
 
@@ -88,6 +89,7 @@ public class ViewTaskActivity extends AppCompatActivity {
         ddlMonth = intent.getIntExtra(EXTRA_MONTH, 0);
         ddlDay = intent.getIntExtra(EXTRA_DAY, 0);
         coords = intent.getDoubleArrayExtra(EXTRA_COORDS);
+        group = intent.getStringExtra(EXTRA_GROUP);
         String dateText;
         if (ddlYear != 0 && ddlMonth != 0 && ddlDay != 0) {
             dateText = ddlYear + "." + ddlMonth + "." + ddlDay;
@@ -117,6 +119,7 @@ public class ViewTaskActivity extends AppCompatActivity {
                 intent.putExtra(AddEditTaskActivity.EXTRA_MONTH, ddlMonth);
                 intent.putExtra(AddEditTaskActivity.EXTRA_DAY, ddlDay);
                 intent.putExtra(AddEditTaskActivity.EXTRA_COORDS, coords);
+                intent.putExtra(AddEditTaskActivity.EXTRA_GROUP, group);
                 startActivityForResult(intent, MainActivity.EDIT_TASK_REQUEST);
             }
         });
@@ -142,6 +145,8 @@ public class ViewTaskActivity extends AppCompatActivity {
             ddlMonth = data.getIntExtra(AddEditTaskActivity.EXTRA_MONTH, 0);
             ddlDay = data.getIntExtra(AddEditTaskActivity.EXTRA_DAY, 0);
             coords = data.getDoubleArrayExtra(AddEditTaskActivity.EXTRA_COORDS);
+            group = data.getStringExtra(AddEditTaskActivity.EXTRA_GROUP);
+
 
             // update the displayed data
             viewTaskTitle.setText(title);
@@ -172,6 +177,7 @@ public class ViewTaskActivity extends AppCompatActivity {
         ndata.putExtra(EXTRA_DAY, ddlDay);
         ndata.putExtra(EXTRA_ID, id);
         ndata.putExtra(EXTRA_COORDS, coords);
+        ndata.putExtra(EXTRA_GROUP, group);
 
         setResult(RESULT_OK, ndata);
         finish();

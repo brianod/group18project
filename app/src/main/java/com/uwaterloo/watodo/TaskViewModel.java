@@ -43,4 +43,6 @@ public class TaskViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<String>> getAllGroup() {return repository.getAllGroup();}
+
+    LiveData<List<Task>> getTasksByGroup(String group){return repository.getTasksByGroup(group);};
 }

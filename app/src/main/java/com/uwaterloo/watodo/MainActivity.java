@@ -81,6 +81,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void filter(String groupTag) {
+        taskViewModel.getTasksByGroup(groupTag).observe(this, tasksObserver);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -164,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra(ViewTaskActivity.EXTRA_YEAR, task.getDdlYear());
                 intent.putExtra(ViewTaskActivity.EXTRA_MONTH, task.getDdlMonth());
                 intent.putExtra(ViewTaskActivity.EXTRA_DAY, task.getDdlDay());
+                intent.putExtra(ViewTaskActivity.EXTRA_GROUP, task.getGroupTag());
 //                startActivityForResult(intent, EDIT_TASK_REQUEST);
                 // temporary coord for fixing
                 double[] temp = new double[2];
@@ -192,6 +197,13 @@ public class MainActivity extends AppCompatActivity {
                 groupAdapter.submitList(strings);
             }
         });
+
+        groupAdapter.setOnItemClickListener(new GroupAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(String group) {
+                filter(group);
+            }
+        });
     }
 
     @Override
@@ -206,11 +218,12 @@ public class MainActivity extends AppCompatActivity {
             int month = data.getIntExtra(AddEditTaskActivity.EXTRA_MONTH,0);
             int date = data.getIntExtra(AddEditTaskActivity.EXTRA_DAY,0);
             double[] coords = data.getDoubleArrayExtra(AddEditTaskActivity.EXTRA_COORDS);
+            String group = data.getStringExtra(AddEditTaskActivity.EXTRA_GROUP);
 
 
             Log.i("MAIN", "ADD Coords in Main: " + coords[0] + ", " + coords[1]);
 
-            Task task = new Task(title, description, coords[0], coords[1], null, 0, priority,year, month, date);
+            Task task = new Task(title, description, coords[0], coords[1], group, 0, priority,year, month, date);
             taskViewModel.insert(task);
 
             Toast.makeText(this, "Task saved", Toast.LENGTH_SHORT).show();
@@ -231,11 +244,12 @@ public class MainActivity extends AppCompatActivity {
             int date = data.getIntExtra(ViewTaskActivity.EXTRA_DAY,0);
             int completeness = data.getIntExtra(ViewTaskActivity.EXTRA_COMPLETENESS, 0);
             double[] coords = data.getDoubleArrayExtra(ViewTaskActivity.EXTRA_COORDS);
+            String group = data.getStringExtra(AddEditTaskActivity.EXTRA_GROUP);
 
 
             Log.i("MAIN", "UPDATE Coords in Main: " + coords[0] + ", " + coords[1]);
 
-            Task task = new Task(title, description, coords[0], coords[1], null, completeness, priority,year,month,date);
+            Task task = new Task(title, description, coords[0], coords[1], group, completeness, priority,year,month,date);
             task.setId(id);
             taskViewModel.update(task);
             Toast.makeText(this, "Task updated", Toast.LENGTH_SHORT).show();
@@ -269,6 +283,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.rank_by_deadline:
                 taskViewModel.getAllTasksByDdl().observe(this, tasksObserver);
                 Toast.makeText(MainActivity.this, "Ranked by deadline", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.show_all_tasks:
+                taskViewModel.getAllTasksByPriority().observe(this,tasksObserver);
+                Toast.makeText(MainActivity.this, "All tasks", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
