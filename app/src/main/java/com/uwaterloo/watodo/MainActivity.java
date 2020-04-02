@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void filter(String groupTag) {
         taskViewModel.getTasksByGroup(groupTag).observe(this, tasksObserver);
+        Toast.makeText(this, groupTag+" tasks", Toast.LENGTH_SHORT).show();
     }
 
     @Override
