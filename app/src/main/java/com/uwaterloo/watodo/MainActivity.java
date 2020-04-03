@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_BACKGROUND_LOCATION
     };
     private static Context context;
+    public static SharingService sharingService;
     /**
      * permissions request code
      */
@@ -112,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         MainActivity.context = getApplicationContext();
+        MainActivity.sharingService = new SharingService();
 
         checkPermissions();
 
