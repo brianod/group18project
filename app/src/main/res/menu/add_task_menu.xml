@@ -6,4 +6,11 @@
         android:icon="@drawable/ic_save"
         android:title="Save"
         app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/share_task"
+        android:icon="@drawable/ic_share_24dp"
+        android:title="Share"
+        app:showAsAction="ifRoom"/>
+
 </menu>

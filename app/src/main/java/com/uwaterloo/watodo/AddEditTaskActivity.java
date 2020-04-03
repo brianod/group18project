@@ -190,6 +190,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.add_task_menu, menu);
+        menu.findItem(R.id.share_task).setVisible(false); // Sharing shouldn't be possible form AddEditActivity. Only from ViewTaskActivity.
         return true;
     }
 

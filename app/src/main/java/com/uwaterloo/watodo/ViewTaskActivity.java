@@ -197,6 +197,8 @@ public class ViewTaskActivity extends AppCompatActivity {
             case R.id.save_task:
                 saveTask();
                 return true;
+            case R.id.share_task:
+                MainActivity.sharingService.shareTaskEmail(title, description, ddlDay, ddlMonth, ddlYear, this);
             default:
                 return super.onOptionsItemSelected(item);
         }
