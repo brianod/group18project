@@ -4,18 +4,21 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.RadioButton;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -33,6 +36,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.application.isradeleon.notify.Notify;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -55,6 +59,16 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
     public static final int CAMERA_REQUEST_CODE = 601;
     public static final int CAMERA_PERMISSION_REQUEST_CODE = 602;
 
+    public CountDownTimer counter = new CountDownTimer(300,100) {
+        @Override
+        public void onTick(long millisUntilFinished) {
+        }
+
+        @Override
+        public void onFinish() {
+        }
+    };
+
 
     private EditText editTextTitle;
     private EditText editTextDescription;
@@ -70,6 +84,13 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
 
     private String apiKey = "AIzaSyA-hySyjyBDVSBKnH2GUv87RsEcLhUF7xM";
     private double[] coords;
+    private RadioButton selectNotifyTime1;
+    private RadioButton selectNotifyTime3;
+    private RadioButton selectNotifyTime7;
+    private RadioButton selectNotifyLocOnsite;
+    private RadioButton selectNotifyLocClose;
+    private String placeName;
+    private Button cancelReminder;
   
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,9 +116,23 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
         selectDate = findViewById(R.id.date);
         selectDate.setOnClickListener(this);
 
+
+        //reminder time selection
+        selectNotifyTime1 = findViewById(R.id.radio_1_day);
+        selectNotifyTime1.setOnClickListener(this);
+        selectNotifyTime3 = findViewById(R.id.radio_3_days);
+        selectNotifyTime3.setOnClickListener(this);
+        selectNotifyTime7 = findViewById(R.id.radio_7_days);
+        selectNotifyTime7.setOnClickListener(this);
+        selectNotifyLocOnsite = findViewById(R.id.radio_onsite);
+        selectNotifyLocOnsite.setOnClickListener(this);
+        selectNotifyLocClose = findViewById(R.id.radio_close);
+        selectNotifyLocClose.setOnClickListener(this);
+        cancelReminder = findViewById(R.id.button_cancel);
+        cancelReminder.setOnClickListener(this);
+      
         // get a reference to the image view that holds the image that the user will see.
         attachmentFilename = findViewById(R.id.attachmentFilename);
-
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
 
@@ -144,6 +179,7 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
                 coords = new double[2];
                 coords[0] = place.getLatLng().latitude;
                 coords[1] = place.getLatLng().longitude;
+                placeName = place.getName();
             }
 
             @Override
@@ -230,7 +266,82 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
 
             datePickerDialog.show();
         }
+        if (view == cancelReminder){
+            counter.cancel();
+            selectNotifyTime1.setChecked(false);
+            selectNotifyTime3.setChecked(false);
+            selectNotifyTime7.setChecked(false);
+            TextView textView=findViewById(R.id.notify);
+            textView.setText("Reminder canceled." );
+        }
+
+        if (view == selectNotifyTime1){
+            counterTime(1, selectNotifyTime1);
+        }
+
+        if (view == selectNotifyTime3){
+            counterTime(3, selectNotifyTime3);
+        }
+
+        if (view == selectNotifyTime7){
+            counterTime(7, selectNotifyTime7);
+        }
+
+        if (view == selectNotifyLocOnsite){
+            Notify.create(getApplicationContext())
+                    .setTitle("You are at:")
+                    //.setContent(placeName) //phone version
+                    .setContent("University of Waterloo") //emulator version
+                    .setColor(R.color.colorPrimary)
+                    .setImportance(Notify.NotificationImportance.MAX)
+                    .show(); // Finally showing the notification
+        }
+
+        if (view == selectNotifyLocClose){
+
+            Notify.create(getApplicationContext())
+                    .setTitle("You are approaching:")
+                    //.setContent(placeName) //phone version
+                    .setContent("University of Waterloo") //emulator version
+                    .setColor(R.color.colorPrimary)
+                    .setImportance(Notify.NotificationImportance.MAX)
+                    .show(); // Finally showing the notification
+        }
+
     }
+
+    public void counterTime(int time, final RadioButton selectNotifyTime){
+
+        counter = new CountDownTimer(time*10000, 1000) {
+            TextView textView=findViewById(R.id.notify);
+
+            public void onTick(long millisUntilFinished) {
+                selectNotifyTime.setChecked(true);
+                textView.setText("The reminder will be sent in " + millisUntilFinished / 1000 + " seconds.");
+
+            }
+
+            public void onFinish() {
+                selectNotifyTime.setChecked(false);
+                String title = editTextTitle.getText().toString();
+                String description = editTextDescription.getText().toString();
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+                String currentDateandTime = "Reminder sent on: ";
+                currentDateandTime = currentDateandTime + sdf.format(new Date());
+                textView.setText(currentDateandTime);
+
+                Notify.create(getApplicationContext())
+                        .setTitle("Upcoming deadline: " + title )
+                        .setContent(description)
+                        .setColor(R.color.colorPrimary)
+                        .setImportance(Notify.NotificationImportance.MAX)
+                        .show(); // Finally showing the notification
+            }
+        }.start();
+
+    }
+
 
     // CAMERA INTENTS
     public void onTakePhotoClicked(View v) {
@@ -341,4 +452,5 @@ public class AddEditTaskActivity extends AppCompatActivity implements View.OnCli
         returnCursor.close();
         return name;
     }
+
 }
