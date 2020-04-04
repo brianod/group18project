@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.application.isradeleon.notify.Notify;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
@@ -29,6 +30,14 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
             String geofenceTaskTitle = triggeringGeofences.get(0).getRequestId();
             Log.i(TAG, "GEOFENCE TRIGGERED: " + geofenceTaskTitle);
             //TODO: Send a notification with the geoFenceTaskTitle
+            Notify.create(MainActivity.getAppContext())
+                    .setTitle("Location Reminder")
+                    //.setContent(placeName) //phone version
+                    .setContent(geofenceTaskTitle)
+                    .setColor(R.color.colorPrimary)
+                    .setAction(new Intent(MainActivity.getAppContext(), MainActivity.class))
+                    .setImportance(Notify.NotificationImportance.MAX)
+                    .show(); // Finally showing the notification
         }
     }
 }
